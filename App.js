@@ -1,9 +1,10 @@
 import React,{Component} from 'react';
-import{NavigatorIOS,ListView,Dimensions,Button,Image,Text,View,StyleSheet,TouchableOpacity,Alert,Navigator,TextInput,AsyncStorage
+import{Linking,NavigatorIOS,ListView,Dimensions,Button,Image,Text,View,StyleSheet,TouchableOpacity,Alert,Navigator,TextInput,AsyncStorage,FlatList
 } from 'react-native';
 import {StackNavigator,TabNavigator} from 'react-navigation';
 import {Constants} from 'expo';
 import PropTypes from 'prop-types';
+import {WetherWiget, WeatherWidget} from 'react-native-weather';
 
 import Expo from 'expo';
 
@@ -43,18 +44,37 @@ class HomeScreen extends Component{
 }
 
 const key ='@Myapp:key';
+
 class ProfileScreen extends Component{
 
+ constructor(){
+   super();
+   this.state={
+     data:[],
+   }
+ }
   state={
     text:'',
     storedValue:'',
   };
 
   componentWillMount(){
-    this.onLoad();
+    this.onLoad();  
+    fetch("https://www.metaweather.com/api/location/44418")
+    .then((result)=>result.json())
+    .then((res)=>{
+      console.warn("data from api",res.consolidated_weather)
+      this.setState({
+        data:res.consolidated_weather,
+      })
+    })
   }
+
+
+
   onChange = (text)=>{
     this.setState({text});
+
   }
   onLoad = async ()=>{
     try{
@@ -82,6 +102,7 @@ class ProfileScreen extends Component{
     title:'My profile',
   };
   render(){
+   
     const{navigate}=this.props.navigation;
     const{storedValue,text} = this.state;
     return(
@@ -105,8 +126,8 @@ class ProfileScreen extends Component{
             height:100,
             margin:20,
             padding:10,
-            borderColor: 'grey',
-            borderWidth:1,
+       
+           
           }}
           multiline={true}
           editable={true}
@@ -118,14 +139,19 @@ class ProfileScreen extends Component{
         </View>
     
         <View style={{ flex:1, backgroundColor: 'red', flexDirection: 'row'}} >
-        <TouchableOpacity onPress={this.onSave}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={this.onSave}>
           <Text> Save locally </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={this.onLoad}>
+          <TouchableOpacity style={styles.buttonContainer} onPress={this.onLoad}>
           <Text> Load </Text>
           </TouchableOpacity>
+
+    
+     
         </View>
-        <View style={{ flex:0.5, backgroundColor: 'blue'}} />
+        <View style={{ flex:0.5, backgroundColor: 'blue'}} >
+        <Button title="My github profile" onPress={ ()=>{ Linking.openURL('https://github.com/VaidasMac/Mobile-App')}} />
+        </View>
       </View>
       </View>
 
